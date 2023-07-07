@@ -1,0 +1,53 @@
+/* General Properties */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    min-height: 100%;
+}
+
+/* Header */
+
+header {
+    text-align: center;
+}
+
+/* Main Content */
+
+main {
+    display: flex;
+    justify-content: center;
+    border: 3px solid red;
+}
+
+.calculator-container {
+    padding: 8px;
+    border: 3px solid brown;
+}
+
+.display-screen {
+    min-height: 200px;
+    min-width: 200px;
+    background-color: rgb(219, 219, 219);
+    margin: 8px;
+}
+
+/* Footer */
+
+footer {
+    margin-top: auto;
+    text-align: center;
+}
+
+footer p {
+    font-size: 20px;
+}

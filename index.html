@@ -3,9 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Calculator</title>
 </head>
 <body>
-    <h1>Calculator</h1>
+    <header>
+        <h1>Calculator</h1>
+    </header>
+    <main>
+        <div class="calculator-container">
+            <div class="display-screen">
+                <div class="last-operation-display"></div>
+                <div class="current-operation-display"></div>
+            </div>
+            <div class="calculator-buttons">
+                <div class="section1">
+                    <button type="button">CLEAR</button>
+                    <button type="button">DELETE</button>
+                </div>
+                <div class="section2">
+                    <button type="button">7</button>
+                    <button type="button">8</button>
+                    <button type="button">9</button>
+                    <button type="button">&divide;</button>
+                </div>
+                <div class="section3">
+                    <button type="button">4</button>
+                    <button type="button">5</button>
+                    <button type="button">6</button>
+                    <button type="button">&times;</button>
+                </div>
+                <div class="section4">
+                    <button type="button">1</button>
+                    <button type="button">2</button>
+                    <button type="button">3</button>
+                    <button type="button">&minus;</button>
+                </div>
+                <div class="section5">
+                    <button type="button">&dot;</button>
+                    <button type="button">0</button>
+                    <button type="button">&equals;</button>
+                    <button type="button">&plus;</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>Copyright &copy; Anabil Hoque</p>
+    </footer>
+    <script src="calculator-logic.js"></script>
 </body>
 </html>
