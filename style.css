@@ -26,19 +26,45 @@ header {
 main {
     display: flex;
     justify-content: center;
-    border: 3px solid red;
 }
 
 .calculator-container {
     padding: 8px;
-    border: 3px solid brown;
+    border: 20px solid brown;
 }
 
 .display-screen {
     min-height: 200px;
-    min-width: 200px;
-    background-color: rgb(219, 219, 219);
-    margin: 8px;
+    min-width: 400px;
+    background-color: rgb(240, 240, 240);
+}
+
+.last-operation-display {
+    min-height: 50px;
+    text-align: right;
+    font-size: 40px;
+}
+
+.current-operation-display {
+    min-height: 100px;
+    text-align: right;
+    font-size: 50px;
+}
+
+.section1, .section2, .section3, .section4, .section5 {
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#clear, #delete {
+    min-width: 195px;
+    min-height: 60px;
+}
+
+.section2 > *, .section3 > *, .section4 > *, .section5 > * {
+    min-width: 90px;
+    min-height: 40px;
 }
 
 /* Footer */
