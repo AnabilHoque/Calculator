@@ -13,6 +13,8 @@ body {
     flex-direction: column;
     margin: 0px;
     min-height: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgb(236, 225, 225);
 }
 
 /* Header */
@@ -28,43 +30,52 @@ main {
     justify-content: center;
 }
 
+header h1 {
+    text-shadow: 1px 1px 2px rgb(48, 46, 46);
+    font-size: 48px;
+}
+
 .calculator-container {
+    background-color: rgb(215, 208, 208);
     padding: 8px;
-    border: 20px solid brown;
+    border: 10px solid rgb(34, 32, 32);
+    border-radius: 12px;
+    box-shadow: 2px 2px 2px 1px rgb(48, 46, 46);
 }
 
 .display-screen {
-    min-height: 200px;
-    min-width: 400px;
-    background-color: rgb(240, 240, 240);
+    height: 10rem;
+    width: 20rem;
+    border: 3px solid rgb(34, 32, 32);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2rem;
+    overflow: hidden;
 }
 
-.last-operation-display {
-    min-height: 50px;
-    text-align: right;
-    font-size: 40px;
+.current-operation {
+    font-size: 1.5rem;
 }
 
-.current-operation-display {
-    min-height: 100px;
-    text-align: right;
-    font-size: 50px;
+.operation-result {
+    font-size: 2.5rem;
 }
 
 .section1, .section2, .section3, .section4, .section5 {
-    padding-top: 8px;
     display: flex;
-    justify-content: space-between;
+    gap: 8px;
+    padding-top: 8px;
 }
 
 #clear, #delete {
-    min-width: 195px;
-    min-height: 60px;
+    width: calc(100%/2);
 }
 
 .section2 > *, .section3 > *, .section4 > *, .section5 > * {
-    min-width: 90px;
-    min-height: 40px;
+    width: calc(100%/4);
 }
 
 /* Footer */
@@ -76,4 +87,5 @@ footer {
 
 footer p {
     font-size: 20px;
+    font-weight: bolder;
 }

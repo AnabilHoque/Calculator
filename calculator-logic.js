@@ -33,50 +33,97 @@ function operate(operator, num1, num2) {
     return result;
 }
 
-function displayLast(s) {
-    const current = document.querySelector(".last-operation-display");
-    current.innerHTML = s;
+function displayCurrentOperation(s) {
+    const replacedSWithTimes = s.replaceAll("*", "&times;")
+    const replacedSWithDivide = replacedSWithTimes.replaceAll("/", "&divide;");
+    const whitespaceRemovedS = replacedSWithDivide.replace(/\s/g, "");
+    const current = document.querySelector(".current-operation");
+    current.innerHTML = whitespaceRemovedS;
 }
 
-function displayCurrent(s) {
-    const current = document.querySelector(".current-operation-display");
+function displayOperationResult(s) {
+    const current = document.querySelector(".operation-result");
     current.textContent = s;
 }
 
+function evaluate(chainOfOperations) {
+    const arr = chainOfOperations.split(" ");
+    console.log(arr);
+}
 
 function run() {
-    let currOperator;
-    let num1;
-    let num2;
+    let operators = ["+", "-", "/", "*"];
+    let chainOfOperations = "";
+    let isOperatorSet = false;
+    let currentNum = "";
 
     // setup buttons
     const numButtons = document.querySelectorAll(".number-buttons");
     numButtons.forEach(numButton => numButton.addEventListener("click", e => {
-        displayCurrent(e.target.value);
+        isOperatorSet = false;
+        currentNum += e.target.value;
+        chainOfOperations += e.target.value;
+        displayCurrentOperation(chainOfOperations);
     }));
 
     const addButton = document.querySelector("#plus");
     addButton.addEventListener("click", e => {
-        currOperator = "+";
-        displayLast("&plus;");
+        if (!isOperatorSet) {
+            chainOfOperations += " + ";
+            isOperatorSet = true;
+        } else {
+            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "+") {
+                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+                chainOfOperations += " + ";
+            }
+        }
+        currentNum = "";
+        displayCurrentOperation(chainOfOperations);
     });
 
     const subtractButton = document.querySelector("#minus");
     subtractButton.addEventListener("click", e => {
-        currOperator = "-";
-        displayLast("&minus;");
+        if (!isOperatorSet) {
+            chainOfOperations += " - ";
+            isOperatorSet = true;
+        } else {
+            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "-") {
+                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+                chainOfOperations += " - ";
+            }
+        }
+        currentNum = "";
+        displayCurrentOperation(chainOfOperations);
     });
 
     const multiplyButton = document.querySelector("#times");
     multiplyButton.addEventListener("click", e => {
-        currOperator = "*";
-        displayLast("&times;");
+        if (!isOperatorSet) {
+            chainOfOperations += " * ";
+            isOperatorSet = true;
+        } else {
+            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "*") {
+                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+                chainOfOperations += " * ";
+            }
+        }
+        currentNum = "";
+        displayCurrentOperation(chainOfOperations);
     });
 
     const divideButton = document.querySelector("#divide");
     divideButton.addEventListener("click", e => {
-        currOperator = "/";
-        displayLast("&divide;");
+        if (!isOperatorSet) {
+            chainOfOperations += " / ";
+            isOperatorSet = true;
+        } else {
+            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "/") {
+                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+                chainOfOperations += " / ";
+            }
+        }
+        currentNum = "";
+        displayCurrentOperation(chainOfOperations);
     });
 }
 

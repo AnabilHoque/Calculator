@@ -1,2 +1,2 @@
 # Calculator
-Calculator page for the [Odin Project](https://www.theodinproject.com/lessons/foundations-calculator).
+Calculator page for the [Odin Project](https://www.theodinproject.com/lessons/foundations-calculator). The Calculator Icon was provided by [Freepik - Flaticon](https://www.flaticon.com/free-icons/calculator).<br /><br />
