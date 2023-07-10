@@ -1,3 +1,11 @@
+const OPERATORS = ["+", "-", "/", "*"];
+const VALIDPARTOFNUM = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
+
+let chainOfOperations = "";
+let isOperatorSet = false;
+let currentNum = "";
+let result = "";
+
 function add(num1, num2) {
     return num1 + num2
 }
@@ -34,6 +42,8 @@ function operate(operator, num1, num2) {
 }
 
 function displayCurrentOperation(s) {
+    // replace all *, / with their corrsponding html entities, as well as remove any spaces
+    // display the result afterwards
     const replacedSWithTimes = s.replaceAll("*", "&times;")
     const replacedSWithDivide = replacedSWithTimes.replaceAll("/", "&divide;");
     const whitespaceRemovedS = replacedSWithDivide.replace(/\s/g, "");
@@ -46,18 +56,98 @@ function displayOperationResult(s) {
     current.textContent = s;
 }
 
-function evaluate(chainOfOperations) {
-    const arr = chainOfOperations.split(" ");
-    console.log(arr);
+function hasSecondArgOpMorePrecedence(operation1, operation2) {
+    if ((operation1 === "+" || operation1 === "-") && (operation2 === "*" || operation2 === "/")) {
+        return true;
+    }
+    return false;
 }
 
-function run() {
-    let operators = ["+", "-", "/", "*"];
-    let chainOfOperations = "";
-    let isOperatorSet = false;
-    let currentNum = "";
+function evaluateChain(chainOfOperations) {
+    let tokens = chainOfOperations.split("");
 
-    // setup buttons
+    let nums = [];
+    let operations = [];
+
+    for (let i = 0; i < tokens.length; i++) {
+        if (tokens[i] === " ") {
+            continue;
+        }
+
+        if (VALIDPARTOFNUM.includes(tokens[i])) {
+            let buf = "";
+            while (i < tokens.length && VALIDPARTOFNUM.includes(tokens[i])) {
+                buf = buf + tokens[i];
+                i++;
+            }
+            nums.push(parseFloat(buf));
+
+            // corrects offset for next iteration check
+            i--;
+        }
+
+        if (OPERATORS.includes(tokens[i])) {
+            while (operations.length > 0 && hasSecondArgOpMorePrecedence(tokens[i], operations[operations.length-1])) {
+                let num2 = nums.pop();
+                let num1 = nums.pop();
+                nums.push(operate(operations.pop(), num1, num2));
+            }
+
+            operations.push(tokens[i]);
+        }
+    }
+
+    // evaluates remaining operations
+    while (operations.length > 0) {
+        let num2 = nums.pop();
+        let num1 = nums.pop();
+        nums.push(operate(operations.pop(), num1, num2));
+    }
+
+    // returns final result rounded to 2 decimal places
+    return Math.round(nums.pop()*100)/100;
+}
+
+function countDots(s) {
+    let count = 0;
+    for (let i = 0; i < s.length; i++) {
+        if (s.charAt(i) === ".") {
+            count++;
+        }
+    }
+    return count;
+}
+
+function setupClearButton() {
+    const clearButton = document.querySelector("#clear");
+    clearButton.addEventListener("click", e => {
+        chainOfOperations = "";
+        isOperatorSet = false;
+        currentNum = "";
+        displayCurrentOperation(chainOfOperations);
+    });
+}
+
+function setupDeleteButton() {
+    const deleteButton = document.querySelector("#delete");
+    deleteButton.addEventListener("click", e => {
+        // check if we have an operator 
+        if (OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
+            //console.log(chainOfOperations);
+            // we need to remove an operator
+            chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+            isOperatorSet = false;
+        } else if (VALIDPARTOFNUM.includes(chainOfOperations.charAt(chainOfOperations.length-1))) {
+            //console.log(chainOfOperations);
+            // we have either a digit or a dot, just remove it
+            chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-1);
+            currentNum = currentNum.slice(0, currentNum.length-1);
+        }
+        displayCurrentOperation(chainOfOperations);
+    });
+}
+
+function setupNumberButtons() {
     const numButtons = document.querySelectorAll(".number-buttons");
     numButtons.forEach(numButton => numButton.addEventListener("click", e => {
         isOperatorSet = false;
@@ -65,66 +155,103 @@ function run() {
         chainOfOperations += e.target.value;
         displayCurrentOperation(chainOfOperations);
     }));
+}
 
+function setupOperatorEvent(opString) {
+    if (chainOfOperations === "") {
+        alert("You cannot use an operator at the beginning of an expression!");
+        return;
+    }
+
+    if (chainOfOperations.charAt(chainOfOperations.length-1) === ".") {
+        // i.e., 65. <=> 65.0, assumes a 0 when no other number has been added after decimal point
+        chainOfOperations += "0";
+    }
+
+    if (!isOperatorSet) {
+        chainOfOperations = chainOfOperations + " " + opString + " ";
+        isOperatorSet = true;
+    } else {
+        // change the operator previously written
+        if (chainOfOperations.charAt(chainOfOperations.length-2) !== opString) {
+            chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+            chainOfOperations = chainOfOperations + " " + opString + " ";
+        }
+    }
+    currentNum = "";
+    displayCurrentOperation(chainOfOperations);
+}
+
+function setupOperatorButtons() {
     const addButton = document.querySelector("#plus");
-    addButton.addEventListener("click", e => {
-        if (!isOperatorSet) {
-            chainOfOperations += " + ";
-            isOperatorSet = true;
-        } else {
-            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "+") {
-                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
-                chainOfOperations += " + ";
-            }
-        }
-        currentNum = "";
-        displayCurrentOperation(chainOfOperations);
-    });
-
     const subtractButton = document.querySelector("#minus");
-    subtractButton.addEventListener("click", e => {
-        if (!isOperatorSet) {
-            chainOfOperations += " - ";
-            isOperatorSet = true;
-        } else {
-            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "-") {
-                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
-                chainOfOperations += " - ";
-            }
-        }
-        currentNum = "";
-        displayCurrentOperation(chainOfOperations);
-    });
-
     const multiplyButton = document.querySelector("#times");
-    multiplyButton.addEventListener("click", e => {
-        if (!isOperatorSet) {
-            chainOfOperations += " * ";
-            isOperatorSet = true;
-        } else {
-            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "*") {
-                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
-                chainOfOperations += " * ";
-            }
-        }
-        currentNum = "";
-        displayCurrentOperation(chainOfOperations);
+    const divideButton = document.querySelector("#divide");
+
+    addButton.addEventListener("click", e => {
+        setupOperatorEvent("+");
     });
 
-    const divideButton = document.querySelector("#divide");
+    subtractButton.addEventListener("click", e => {
+        setupOperatorEvent("-");
+    });
+
+    multiplyButton.addEventListener("click", e => {
+        setupOperatorEvent("*");
+    });
+
     divideButton.addEventListener("click", e => {
-        if (!isOperatorSet) {
-            chainOfOperations += " / ";
-            isOperatorSet = true;
-        } else {
-            if (chainOfOperations.charAt(chainOfOperations.length-2) !== "/") {
-                chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
-                chainOfOperations += " / ";
-            }
-        }
-        currentNum = "";
+        setupOperatorEvent("/");
+    });
+}
+
+function setupDotButton() {
+    const dotButton = document.querySelector("#dot");
+    dotButton.addEventListener("click", e => {
+    if (OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
+        // last chain of operations includes an operator, so cannot put a dot -> ignore
+        alert("Cannot put a dot after an operator!")
+        return;
+    }
+
+    if (countDots(currentNum) === 1) {
+        // cannot add more than one dot
+        alert("You cannot have a single number with 2 or more dots!")
+        return;
+    }
+
+        chainOfOperations += ".";
+        currentNum += ".";
         displayCurrentOperation(chainOfOperations);
     });
+}
+
+function setupEqualButton() {
+    const equalButton = document.querySelector("#equals");
+    equalButton.addEventListener("click", e => {
+        let result = evaluateChain(chainOfOperations).toString();
+        if (result === "NaN") {
+            return;
+        }
+        if (result === "Infinity") {
+            chainOfOperations = "";
+            isOperatorSet = false;
+            currentNum = "";
+            alert("Division by zero! Undefined!");
+            return;
+        }
+        displayOperationResult(result);
+    });
+}
+
+function run() {
+    // setup buttons
+    setupClearButton();
+    setupDeleteButton();
+    setupNumberButtons();
+    setupOperatorButtons();
+    setupDotButton();
+    setupEqualButton();
 }
 
 run();
