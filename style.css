@@ -45,7 +45,7 @@ header h1 {
 
 .display-screen {
     height: 10rem;
-    width: 20rem;
+    width: 23rem;
     border: 3px solid rgb(34, 32, 32);
     border-radius: 12px;
     margin-bottom: 8px;
@@ -57,25 +57,51 @@ header h1 {
 }
 
 .current-operation {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
 }
 
 .operation-result {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
 }
 
 .section1, .section2, .section3, .section4, .section5 {
     display: flex;
     gap: 8px;
-    padding-top: 8px;
+    padding-top: 10px;
 }
 
 #clear, #delete {
     width: calc(100%/2);
+    height: 5rem;
+    font-size: larger;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+#clear {
+    background-color: rgb(164, 59, 59);
+}
+
+#delete {
+    background-color: rgb(182, 119, 3);
 }
 
 .section2 > *, .section3 > *, .section4 > *, .section5 > * {
     width: calc(100%/4);
+    height: 3rem;
+    color: rgb(197, 190, 190);
+    font-size: large;
+    font-weight: bold;
+    background-color: rgb(34, 32, 32);
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.02);
+    border-color: rgb(48, 46, 46);
+    box-shadow: 0 0 0.5rem rgb(48, 46, 46);
 }
 
 /* Footer */
