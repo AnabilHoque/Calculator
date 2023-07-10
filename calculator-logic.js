@@ -43,7 +43,7 @@ function operate(operator, num1, num2) {
 
 function displayCurrentOperation(s) {
     // replace all *, / with their corrsponding html entities, as well as remove any spaces
-    // display the result afterwards
+    // displays it afterwards
     const replacedSWithTimes = s.replaceAll("*", "&times;")
     const replacedSWithDivide = replacedSWithTimes.replaceAll("/", "&divide;");
     const whitespaceRemovedS = replacedSWithDivide.replace(/\s/g, "");
@@ -52,11 +52,25 @@ function displayCurrentOperation(s) {
 }
 
 function displayOperationResult(s) {
+    // displays the result of an expression
     const current = document.querySelector(".operation-result");
     current.textContent = s;
 }
 
+function display() {
+    displayCurrentOperation(chainOfOperations);
+    displayOperationResult(resultTot);
+}
+
+function resetGlobalVariables() {
+    chainOfOperations = "";
+    isOperatorSet = false;
+    currentNum = "";
+    resultTot = "";
+}
+
 function hasSecondArgOpMorePrecedence(operation1, operation2) {
+    // checks is operation2 has higher precedence than operation1
     if ((operation1 === "+" || operation1 === "-") && (operation2 === "*" || operation2 === "/")) {
         return true;
     }
@@ -64,6 +78,7 @@ function hasSecondArgOpMorePrecedence(operation1, operation2) {
 }
 
 function evaluateChain(chainOfOperations) {
+    // evaluates string expression chainOfOperations
     let tokens = chainOfOperations.split("");
 
     let nums = [];
@@ -109,6 +124,8 @@ function evaluateChain(chainOfOperations) {
 }
 
 function countDots(s) {
+    // used to count dots in a particular string,
+    // used for checking if a number has more than 1 dot or not
     let count = 0;
     for (let i = 0; i < s.length; i++) {
         if (s.charAt(i) === ".") {
@@ -118,62 +135,62 @@ function countDots(s) {
     return count;
 }
 
+function setupClearEvent() {
+    resetGlobalVariables();
+    display();
+}
+
 function setupClearButton() {
     const clearButton = document.querySelector("#clear");
-    clearButton.addEventListener("click", e => {
-        chainOfOperations = "";
+    clearButton.addEventListener("click", setupClearEvent);
+}
+
+function setupDeleteEvent() {
+    // check if we have resultTot already
+    if (resultTot !== "") {
+        // display it in the current operation section
+        chainOfOperations = resultTot;
         isOperatorSet = false;
-        currentNum = "";
+        currentNum = resultTot;
         resultTot = "";
-        displayCurrentOperation(chainOfOperations);
-        displayOperationResult(resultTot);
-    });
+        display();
+        return;
+    }
+
+    // check if we have an operator 
+    if (OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
+        // we need to remove an operator
+        chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
+        isOperatorSet = false;
+    } else if (VALIDPARTOFNUM.includes(chainOfOperations.charAt(chainOfOperations.length-1))) {
+        // we have either a digit or a dot, just remove it
+        chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-1);
+        currentNum = currentNum.slice(0, currentNum.length-1);
+    }
+
+    display();
 }
 
 function setupDeleteButton() {
     const deleteButton = document.querySelector("#delete");
-    deleteButton.addEventListener("click", e => {
-        // check if we have resultTot already
-        if (resultTot !== "") {
-            chainOfOperations = resultTot;
-            isOperatorSet = false;
-            currentNum = resultTot;
-            resultTot = "";
-            displayCurrentOperation(chainOfOperations);
-            displayOperationResult(resultTot);
-            return;
-        }
+    deleteButton.addEventListener("click", setupDeleteEvent);
+}
 
-        // check if we have an operator 
-        if (OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
-            // we need to remove an operator
-            chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-3);
-            isOperatorSet = false;
-        } else if (VALIDPARTOFNUM.includes(chainOfOperations.charAt(chainOfOperations.length-1))) {
-            // we have either a digit or a dot, just remove it
-            chainOfOperations = chainOfOperations.slice(0, chainOfOperations.length-1);
-            currentNum = currentNum.slice(0, currentNum.length-1);
-        }
-        displayCurrentOperation(chainOfOperations);
-        displayOperationResult(resultTot);
-    });
+function setupNumberEvent(numString) {
+    // check if we have resultTot already
+    if (resultTot !== "") {
+        resetGlobalVariables();
+    }
+    isOperatorSet = false;
+    currentNum += numString;
+    chainOfOperations += numString;
+    display();
 }
 
 function setupNumberButtons() {
     const numButtons = document.querySelectorAll(".number-buttons");
     numButtons.forEach(numButton => numButton.addEventListener("click", e => {
-        // check if we have resultTot already 
-        if (resultTot !== "") {
-            chainOfOperations = "";
-            isOperatorSet = false;
-            currentNum = "";
-            resultTot = "";
-        }
-        isOperatorSet = false;
-        currentNum += e.target.value;
-        chainOfOperations += e.target.value;
-        displayCurrentOperation(chainOfOperations);
-        displayOperationResult(resultTot);
+        setupNumberEvent(e.target.value);
     }));
 }
 
@@ -207,8 +224,7 @@ function setupOperatorEvent(opString) {
         }
     }
     currentNum = "";
-    displayCurrentOperation(chainOfOperations);
-    displayOperationResult(resultTot);
+    display();
 }
 
 function setupOperatorButtons() {
@@ -234,66 +250,100 @@ function setupOperatorButtons() {
     });
 }
 
+function setupDotEvent() {
+    // check if we have resultTot already
+    if (resultTot !== "") {
+        // if we have a result i.e. 78.2 in the operation result section,
+        // but we click dot, then we reset everything, and up starting a new expression
+        // this is the default behaviour of a standard calculator, and so it is followed here
+        resetGlobalVariables();
+    }
+
+    if (countDots(currentNum) === 1) {
+        // cannot add more than one dot
+        alert("You cannot have a single number with 2 or more dots!");
+        return;
+    }
+
+    if (chainOfOperations === "" || OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
+        // translate . on its own i.e, . <=> 0.
+        chainOfOperations += "0";
+        currentNum += "0";
+    }
+
+    chainOfOperations += ".";
+    currentNum += ".";
+    display();
+}
+
 function setupDotButton() {
     const dotButton = document.querySelector("#dot");
-    dotButton.addEventListener("click", e => {
-        // check if we have resultTot already
-        if (resultTot !== "") {
-            chainOfOperations = "";
-            isOperatorSet = false;
-            currentNum = "";
-            resultTot = "";
-        }
+    dotButton.addEventListener("click", setupDotEvent);
+}
 
-        if (countDots(currentNum) === 1) {
-            // cannot add more than one dot
-            alert("You cannot have a single number with 2 or more dots!");
-            return;
-        }
+function setupEqualEvent() {
+    // check if we have resultTot already
+    if (resultTot !== "") {
+        // we already computed a result with equal
+        // pressing equal again shouldn't do anything
+        return;
+    }
 
-        if (chainOfOperations === "" || OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
-            // translate . on its own i.e, . <=> 0.
-            chainOfOperations += "0";
-            currentNum += "0";
-        }
+    // check if applying an equal directly after an operator
+    if (OPERATORS.includes(chainOfOperations.charAt(chainOfOperations.length-2))) {
+        resetGlobalVariables();
+        alert("Syntax Error! Cannot use 'equal' directly after an operator.");
+        display();
+        return;
+    }
+    
+    resultTot = evaluateChain(chainOfOperations).toString();
 
-        chainOfOperations += ".";
-        currentNum += ".";
-        displayCurrentOperation(chainOfOperations);
-    });
+    if (resultTot === "NaN") {
+        resetGlobalVariables();
+        display();
+        alert("Undefined!");
+        return;
+    }
+
+    if (resultTot === "Infinity") {
+        resetGlobalVariables();
+        display();
+        alert("Division by zero! Undefined!");
+        return;
+    }
+
+    displayOperationResult(resultTot);
 }
 
 function setupEqualButton() {
     const equalButton = document.querySelector("#equals");
-    equalButton.addEventListener("click", e => {
-        // check if we have resultTot already
-        if (resultTot !== "") {
-            return;
-        }
-        
-        resultTot = evaluateChain(chainOfOperations).toString();
-        if (resultTot === "NaN") {
-            return;
-        }
-        if (resultTot === "Infinity") {
-            chainOfOperations = "";
-            isOperatorSet = false;
-            currentNum = "";
-            alert("Division by zero! Undefined!");
-            return;
-        }
-        displayOperationResult(resultTot);
-    });
+    equalButton.addEventListener("click", setupEqualEvent);
 }
 
 function run() {
-    // setup buttons
+    // setup buttons and keyboard support
     setupClearButton();
     setupDeleteButton();
     setupNumberButtons();
     setupOperatorButtons();
     setupDotButton();
     setupEqualButton();
+    window.addEventListener("keydown", e => {
+        if (e.key >= "0" && e.key <= "9") {
+            setupNumberEvent(e.key);
+        } else if (e.key === ".") {
+            setupDotEvent();
+        } else if (e.key === "=" || e.key === "Enter") {
+            setupEqualEvent();
+        } else if (e.key === "Backspace") {
+            setupDeleteEvent();
+        } else if (e.key === "Clear") {
+            setupClearEvent();
+        } else if (OPERATORS.includes(e.key)) {
+            setupOperatorEvent(e.key);
+        }
+    });
 }
 
 run();
